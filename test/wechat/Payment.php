@@ -13,6 +13,9 @@ require_once __DIR__ . '/../../src/wechat/Payment.php';
 describe('payment', function () {
     $this->options = require_once('options.php');
     $this->payment = new \wechat\Payment($this->options);
+    $this->order = [
+        'id' => '1217752501201407033233368018'
+    ];
     $this->params = [
         'param' => 'value'
     ];
@@ -52,14 +55,14 @@ describe('payment', function () {
         });
     });
 
-    \pho\context('prepay', function () {
+    \pho\context('prepay for web', function () {
         \pho\it('should response success', function () {
             $params = [
                 'device_info' => 'WEB',
                 'body' => 'Ipad mini  16G  白色',
                 'detail' => 'Ipad mini  16G  白色',
                 'attach' => '说明',
-                'out_trade_no' => '1217752501201407033233368018',
+                'out_trade_no' => $this->order['id'],
                 'total_fee' => 888,
                 'spbill_create_ip' => '8.8.8.8',
                 'time_start' => date('YmdHis'),

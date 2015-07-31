@@ -81,6 +81,26 @@ class Payment {
         return $this->request('/pay/unifiedorder', $params);
     }
 
+    public function queryOrder($params) {
+        return $this->request('/pay/orderquery', $params);
+    }
+
+    public function closeOrder($params) {
+        return $this->request('/pay/closeorder', $params);
+    }
+
+    public function queryRefund($params) {
+        return $this->request('/pay/refundquery', $params);
+    }
+
+    public function downloadBill($params) {
+        return $this->request('/pay/downloadbill', $params);
+    }
+
+    public function refund($params) {
+        return $this->request('/secapi/pay/refund', $params);
+    }
+
     public function response($code, $msg) {
         return $this->xmlEncode([
             'return_code' => $code,
