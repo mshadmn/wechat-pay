@@ -9,9 +9,9 @@ date_default_timezone_set('Asia/Chongqing');
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../src/wechat/Payment.php';
-
-describe('payment', function () {
-    $this->options = require_once('options.php');
+describe('wxmp', function () {
+    $options = require('options.php');
+    $this->options = $options['wxmp'];
     $this->payment = new \wechat\Payment($this->options);
     $this->order = [
         'id' => '1217752501201407033233368018'
@@ -55,7 +55,7 @@ describe('payment', function () {
         });
     });
 
-    \pho\context('prepay for web', function () {
+    \pho\context('prepay', function () {
         \pho\it('should response success', function () {
             $params = [
                 'device_info' => 'WEB',
@@ -72,6 +72,42 @@ describe('payment', function () {
                 'openid' => 'obBtPs3uivk1vmFtEF1DYUqoIGPo'
             ];
             $res = $this->payment->prepay($params);
+            \pho\expect($res)->toHaveKey('prepay_id');
+            \pho\expect($res['return_code'])->toEql(\wechat\Payment::SUCCESS);
+            \pho\expect($res['return_msg'])->toEql('OK');
+            \pho\expect($res['appid'])->toEql($this->options['appid']);
+            \pho\expect($res['mch_id'])->toEql($this->options['mch_id']);
+        });
+    });
+});
+
+describe('app', function () {
+    $options = require('options.php');
+    $this->options = $options['app'];
+    $this->payment = new \wechat\Payment($this->options);
+    $this->order = [
+        'id' => '1217752501201407033233368018'
+    ];
+    $this->params = [
+        'param' => 'value'
+    ];
+    \pho\context('prepay', function () {
+        \pho\it('should response success', function () {
+            $params = [
+                'device_info' => '013467007045764',
+                'body' => 'Ipad mini  16G  白色',
+                'detail' => 'Ipad mini  16G  白色',
+                'attach' => '说明',
+                'out_trade_no' => $this->order['id'],
+                'total_fee' => 888,
+                'spbill_create_ip' => '8.8.8.8',
+                'time_start' => date('YmdHis'),
+                'time_expire' => date('YmdHis', strtotime('+10 minutes')),
+                'notify_url' => 'http://wxmp.facelike.com/api/wechat/payments/callback',
+                'trade_type' => 'APP'
+            ];
+            $res = $this->payment->prepay($params);
+            var_dump($res);
             \pho\expect($res)->toHaveKey('prepay_id');
             \pho\expect($res['return_code'])->toEql(\wechat\Payment::SUCCESS);
             \pho\expect($res['return_msg'])->toEql('OK');
