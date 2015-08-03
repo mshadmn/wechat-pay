@@ -107,7 +107,6 @@ describe('app', function () {
                 'trade_type' => 'APP'
             ];
             $res = $this->payment->prepay($params);
-            var_dump($res);
             \pho\expect($res)->toHaveKey('prepay_id');
             \pho\expect($res['return_code'])->toEql(\wechat\Payment::SUCCESS);
             \pho\expect($res['return_msg'])->toEql('OK');
