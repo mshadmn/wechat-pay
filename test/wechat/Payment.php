@@ -147,4 +147,17 @@ describe('app', function () {
             \pho\expect($res['err_code'])->toBe('REFUNDNOTEXIST');
         });
     });
+
+    \pho\context('download bill', function () {
+        \pho\it('should response success', function () {
+            $params = [
+                'bill_date' => '20150804',
+                'bill_type' => 'ALL'
+            ];
+            $self = $this;
+            \pho\expect(function () use($self, $params) {
+                $self->payment->downloadBill($params);
+            })->toThrow('\Exception');
+        });
+    });
 });
