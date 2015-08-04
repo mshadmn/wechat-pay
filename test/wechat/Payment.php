@@ -160,4 +160,24 @@ describe('app', function () {
             })->toThrow('\Exception');
         });
     });
+
+    \pho\context('refund', function () {
+        \pho\it('should be fail if order is invalid', function () {
+            $params = [
+                'out_trade_no' => $this->order['id'],
+                'total_fee' => 888,
+                'refund_fee' => 888,
+                'op_user_id' => '1900000109'
+            ];
+            $self = $this;
+            \pho\expect(function () use($self, $params) {
+                try {
+                    $self->payment->refund($params);
+                } catch (\Exception $e) {
+                    var_dump($e->getMessage());
+                    throw $e;
+                }
+            })->toThrow('\Exception');
+        });
+    });
 });

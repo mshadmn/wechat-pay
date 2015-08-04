@@ -1,3 +1,5 @@
 /vendor/
 .idea
 test/wechat/options.php
+test/wechat/apiclient_cert.pem
+test/wechat/apiclient_key.pem

@@ -64,12 +64,22 @@ class Payment {
         return $this->options;
     }
 
-    public function request($path, $params, $headers = []) {
+    public function request($path, $params, $headers = [], $isSecure = false) {
         $params['appid'] = $this->options['appid'];
         $params['mch_id'] = $this->options['mch_id'];
         $params['nonce_str'] = $this->getNonce();
         $params['sign'] = $this->sign($params);
         $xml = $this->xmlEncode($params);
+        if ($isSecure) {
+            Request::curlOpts([
+                CURLOPT_SSLCERTTYPE => 'PEM',
+                CURLOPT_SSLCERT => $this->options['cert'],
+                CURLOPT_SSLKEYTYPE => 'PEM',
+                CURLOPT_SSLKEY => $this->options['private'],
+            ]);
+        } else {
+            Request::clearCurlOpts();
+        }
         /**
          * @var $res \Unirest\Response
          */
@@ -115,7 +125,7 @@ class Payment {
     }
 
     public function refund($params) {
-        return $this->request('/secapi/pay/refund', $params);
+        return $this->request('/secapi/pay/refund', $params, [], true);
     }
 
     public function response($code, $msg) {
