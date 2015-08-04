@@ -128,12 +128,23 @@ describe('app', function () {
             \pho\expect($res['err_code'])->toBe('SYSTEMERROR');
         });
 
-        \pho\it('should response error if order closed', function () {
-            $param = [
+        \pho\it('should response success if order closed', function () {
+            $params = [
                 'out_trade_no' => '1217752501201407033233368018'
             ];
-            $res = $this->payment->closeOrder($param);
+            $res = $this->payment->closeOrder($params);
             \pho\expect($res['result_code'])->toBe(\wechat\Payment::SUCCESS);
+        });
+    });
+
+    \pho\context('query refund', function () {
+        \pho\it('should response error if refund not exist', function () {
+            $params = [
+                'out_trade_no' => $this->order['id']
+            ];
+            $res = $this->payment->queryRefund($params);
+            \pho\expect($res['result_code'])->toBe(\wechat\Payment::FAIL);
+            \pho\expect($res['err_code'])->toBe('REFUNDNOTEXIST');
         });
     });
 });
