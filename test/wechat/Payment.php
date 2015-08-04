@@ -14,7 +14,7 @@ describe('wxmp', function () {
     $this->options = $options['wxmp'];
     $this->payment = new \wechat\Payment($this->options);
     $this->order = [
-        'id' => '1217752501201407033233368018'
+        'id' => '1217752501201407033233368017'
     ];
     $this->params = [
         'param' => 'value'
@@ -82,7 +82,7 @@ describe('app', function () {
     $this->options = $options['app'];
     $this->payment = new \wechat\Payment($this->options);
     $this->order = [
-        'id' => '1217752501201407033233368018'
+        'id' => '1217752501201407033233368017'
     ];
     $this->params = [
         'param' => 'value'
@@ -115,6 +115,25 @@ describe('app', function () {
 
             $res = $this->payment->queryOrder($params);
             \pho\expect($res['trade_state'])->toEql('NOTPAY');
+        });
+    });
+
+    \pho\context('close order', function () {
+        \pho\it('should response error if order not exist', function () {
+            $params = [
+                'out_trade_no' => $this->order['id'] . 'not-exist'
+            ];
+            $res = $this->payment->closeOrder($params);
+            \pho\expect($res['result_code'])->toBe(\wechat\Payment::FAIL);
+            \pho\expect($res['err_code'])->toBe('SYSTEMERROR');
+        });
+
+        \pho\it('should response error if order closed', function () {
+            $param = [
+                'out_trade_no' => '1217752501201407033233368018'
+            ];
+            $res = $this->payment->closeOrder($param);
+            \pho\expect($res['result_code'])->toBe(\wechat\Payment::SUCCESS);
         });
     });
 });

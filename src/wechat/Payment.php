@@ -22,6 +22,9 @@ class Payment {
 
     public function sign($params) {
         unset($params['sign']);
+        $params = array_filter($params, function ($value) {
+            return !empty(trim($value));
+        });
         ksort($params);
         reset($params);
         $qs = http_build_query($params);
@@ -72,21 +75,21 @@ class Payment {
          */
         $res = Request::post(sprintf('%s%s', $this->options['host'], $path), $headers, $xml);
         if ($res->code !== 200) {
-            return null;
+            throw new \Exception('Invalid response status code', $res->code);
         }
         $body = $this->xmlDecode($res->body);
         if (!is_array($body)) {
-            return null;
+            throw new \Exception(sprintf('Invalid response body: %s', $res->body));
         }
-        if ($body['return_code'] !== static::SUCCESS || $body['result_code'] !== static::SUCCESS) {
-            return null;
+        if ($body['return_code'] !== static::SUCCESS) {
+            throw new \Exception(sprintf('Invalid return_code: %s', $res->body));
         }
         if ($body['appid'] !== $this->options['appid'] || $body['mch_id'] !== $this->options['mch_id']) {
-            return null;
+            throw new \Exception(sprintf('Invalid appid or mch_id: %s', $res->body));
         }
         $sign = $body['sign'];
         if ($sign !== $this->sign($body)) {
-            return null;
+            throw new \Exception(sprintf('Invalid sign: %s', $res->body));
         }
         return $body;
     }
