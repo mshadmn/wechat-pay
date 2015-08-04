@@ -74,7 +74,21 @@ class Payment {
         if ($res->code !== 200) {
             return null;
         }
-        return $this->xmlDecode($res->body);
+        $body = $this->xmlDecode($res->body);
+        if (!is_array($body)) {
+            return null;
+        }
+        if ($body['return_code'] !== static::SUCCESS || $body['result_code'] !== static::SUCCESS) {
+            return null;
+        }
+        if ($body['appid'] !== $this->options['appid'] || $body['mch_id'] !== $this->options['mch_id']) {
+            return null;
+        }
+        $sign = $body['sign'];
+        if ($sign !== $this->sign($body)) {
+            return null;
+        }
+        return $body;
     }
 
     public function prepay($params) {

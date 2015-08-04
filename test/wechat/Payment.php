@@ -73,10 +73,6 @@ describe('wxmp', function () {
             ];
             $res = $this->payment->prepay($params);
             \pho\expect($res)->toHaveKey('prepay_id');
-            \pho\expect($res['return_code'])->toEql(\wechat\Payment::SUCCESS);
-            \pho\expect($res['return_msg'])->toEql('OK');
-            \pho\expect($res['appid'])->toEql($this->options['appid']);
-            \pho\expect($res['mch_id'])->toEql($this->options['mch_id']);
         });
     });
 });
@@ -108,10 +104,17 @@ describe('app', function () {
             ];
             $res = $this->payment->prepay($params);
             \pho\expect($res)->toHaveKey('prepay_id');
-            \pho\expect($res['return_code'])->toEql(\wechat\Payment::SUCCESS);
-            \pho\expect($res['return_msg'])->toEql('OK');
-            \pho\expect($res['appid'])->toEql($this->options['appid']);
-            \pho\expect($res['mch_id'])->toEql($this->options['mch_id']);
+        });
+    });
+
+    \pho\context('query order', function () {
+        \pho\it('should response NOTPAY status', function () {
+            $params = [
+                'out_trade_no' => $this->order['id']
+            ];
+
+            $res = $this->payment->queryOrder($params);
+            \pho\expect($res['trade_state'])->toEql('NOTPAY');
         });
     });
 });
