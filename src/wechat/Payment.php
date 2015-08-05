@@ -71,19 +71,18 @@ class Payment {
         $params['sign'] = $this->sign($params);
         $xml = $this->xmlEncode($params);
         if ($isSecure) {
-            Request::curlOpts([
-                CURLOPT_SSLCERTTYPE => 'PEM',
-                CURLOPT_SSLCERT => $this->options['cert'],
-                CURLOPT_SSLKEYTYPE => 'PEM',
-                CURLOPT_SSLKEY => $this->options['private'],
-            ]);
-        } else {
-            Request::clearCurlOpts();
+            Request::curlOpt(CURLOPT_SSLCERTTYPE, 'PEM');
+            Request::curlOpt(CURLOPT_SSLCERT, $this->options['cert']);
+            Request::curlOpt(CURLOPT_SSLKEYTYPE, 'PEM');
+            Request::curlOpt(CURLOPT_SSLKEY, $this->options['private']);
         }
         /**
          * @var $res \Unirest\Response
          */
         $res = Request::post(sprintf('%s%s', $this->options['host'], $path), $headers, $xml);
+        if ($isSecure) {
+            Request::clearCurlOpts();
+        }
         if ($res->code !== 200) {
             throw new \Exception('Invalid response status code', $res->code);
         }
